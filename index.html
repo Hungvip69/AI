@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nhận Diện Cảm Xúc</title>
+    <!-- Font hiện đại -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="./style.css" />
+
+    <!-- Thư viện p5.js và ml5.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://unpkg.com/ml5@0.7.1/dist/ml5.min.js"></script>
+</head>
+<body>
+    <header class="app-header">
+        <div class="container">
+            <div class="header-info">
+                <h1>App Nhận Diện Cảm Xúc</h1>
+                <p>Nhận diện cảm xúc theo thời gian thực với webcam và Teachable Machine.</p>
+            </div>
+            <div class="header-actions">
+                <button id="theme-toggle" class="btn btn-outline header-toggle" aria-label="Chuyển giao diện">🌙 Chế độ tối</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Khối điều khiển -->
+        <section class="controls">
+            <div class="control-group">
+                <label for="model-url">URL mô hình Teachable Machine</label>
+                <div class="input-row">
+                    <input id="model-url" type="url" placeholder="Tuỳ chỉnh mô hình, ví dụ: https://teachablemachine.withgoogle.com/models/XXXXXXX/" value="https://teachablemachine.withgoogle.com/models/wWLK3CJ0v/" />
+                    <button id="load-model" class="btn btn-primary">Tải mô hình</button>
+                </div>
+                <div id="model-status" class="status-area">
+                    <!-- Hiển thị trạng thái tải mô hình -->
+                </div>
+            </div>
+
+            <div class="control-group inline">
+                <button id="start-btn" class="btn btn-success" disabled>Bắt đầu</button>
+                <button id="stop-btn" class="btn btn-outline" disabled>Dừng</button>
+            </div>
+        </section>
+
+        <!-- Loader khi tải mô hình -->
+        <section id="loader" class="loader hidden" aria-live="polite" aria-busy="false">
+            <div class="loader-title">Đang tải mô hình...</div>
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+        </section>
+
+        <!-- Khu vực video -->
+        <section class="video-panel">
+            <div id="video-container" class="video-container">
+                <!-- Canvas p5 sẽ gắn vào đây -->
+            </div>
+        </section>
+
+        <!-- Kết quả -->
+        <section class="results">
+            <div class="result-line">
+                <span id="result-label" class="label">Chưa có dữ liệu</span>
+                <span id="result-confidence" class="confidence"></span>
+            </div>
+            <div id="emoji" class="emoji"></div>
+        </section>
+
+        <!-- Thông báo lỗi thân thiện người dùng -->
+        <section id="error-area" class="error-area" role="alert"></section>
+    </main>
+
+    <footer class="app-footer" role="contentinfo">
+        <div class="container">
+            <p class="copyright">© <span id="year"></span> App Nhận Diện Cảm Xúc. Bản quyền thuộc về tác giả.</p>
+        </div>
+    </footer>
+
+    <!-- Script chính -->
+    <script src="./script.js"></script>
+</body>
+</html>

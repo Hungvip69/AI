@@ -1,0 +1,256 @@
+/*
+  style.css
+  - Giao diện hiện đại, responsive
+  - Thanh tiến trình tải mô hình
+  - Căn giữa video và hiển thị kết quả nổi bật
+*/
+
+:root {
+  --bg: #0f172a;            /* nền xanh đậm */
+  --card: #111827;          /* nền thẻ */
+  --text: #e5e7eb;          /* chữ sáng */
+  --muted: #9ca3af;         /* chữ phụ */
+  --primary: #4f46e5;       /* tím chủ đạo */
+  --primary-600: #4338ca;
+  --success: #10b981;       /* xanh lá */
+  --danger: #ef4444;        /* đỏ */
+  --border: #1f2937;        /* viền */
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: radial-gradient(1200px 600px at 20% -20%, #1e293b 0%, var(--bg) 40%, #0b1225 100%);
+  color: var(--text);
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.app-header {
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(90deg, rgba(79,70,229,0.12), rgba(16,185,129,0.12));
+}
+.app-header h1 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.8rem;
+}
+.app-header p {
+  margin: 6px 0 12px;
+  color: var(--muted);
+}
+
+main.container {
+  display: grid;
+  gap: 16px;
+}
+
+.controls {
+  display: grid;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.control-group {
+  display: grid;
+  gap: 8px;
+}
+.control-group.inline { display: flex; gap: 8px; align-items: center; }
+
+label { font-weight: 600; }
+.input-row { display: flex; gap: 8px; }
+input[type="url"] {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #0b1220;
+  color: var(--text);
+}
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #0a0f1a;
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+.btn-primary { background: var(--primary); border-color: var(--primary-600); }
+.btn-success { background: var(--success); border-color: #0ea371; }
+.btn-outline { background: transparent; }
+
+.status-area { color: var(--muted); min-height: 20px; }
+
+.loader {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.loader.hidden { display: none; }
+.loader-title { font-weight: 600; margin-bottom: 10px; }
+.progress-bar {
+  width: 100%; height: 8px; border-radius: 999px;
+  background: #0b1220; border: 1px solid var(--border);
+  overflow: hidden;
+}
+.progress {
+  width: 40%; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, #a78bfa, #60a5fa, #34d399);
+  animation: slide 1.2s ease-in-out infinite;
+}
+@keyframes slide {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(30%); }
+  100% { transform: translateX(120%); }
+}
+
+.video-panel {
+  display: grid;
+  place-items: center;
+}
+.video-container {
+  position: relative;
+  width: 480px; /* Tăng từ 340px lên 480px */
+  height: 360px; /* Tăng từ 260px lên 360px */
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #0b1220;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  overflow: hidden;
+}
+canvas { transform: scaleX(-1); }
+
+.results {
+  display: grid;
+  gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.result-line {
+  display: flex; gap: 10px; align-items: baseline;
+}
+.label { font-size: 1.4rem; font-weight: 700; }
+.confidence { font-size: 1rem; color: var(--muted); }
+.emoji { font-size: 3rem; }
+.emoji.hidden { display: none; }
+
+.error-area {
+  color: var(--text);
+  background: rgba(239,68,68,0.15);
+  border: 1px solid rgba(239,68,68,0.25);
+  border-radius: 10px;
+  padding: 12px;
+  display: none;
+}
+.error-area.show { display: block; }
+
+/* Responsive */
+@media (min-width: 768px) {
+  .video-container {
+    width: 640px;
+    height: 480px;
+  }
+}
+
+@media (max-width: 767px) {
+  .video-container {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4/3;
+  }
+}
+canvas { transform: scaleX(-1); }
+
+.results {
+  display: grid;
+  gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.result-line {
+  display: flex; gap: 10px; align-items: baseline;
+}
+.label { font-size: 1.4rem; font-weight: 700; }
+.confidence { font-size: 1rem; color: var(--muted); }
+.emoji { font-size: 3rem; }
+.emoji.hidden { display: none; }
+
+.error-area {
+  color: var(--text);
+  background: rgba(239,68,68,0.15);
+  border: 1px solid rgba(239,68,68,0.25);
+  border-radius: 10px;
+  padding: 12px;
+  display: none;
+}
+.error-area.show { display: block; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .video-container { width: 100%; height: auto; aspect-ratio: 4/3; }
+}
+
+/* ---------- Footer ---------- */
+.app-footer {
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+  background: var(--card);
+}
+.app-footer .container { padding: 12px 16px; }
+.copyright { margin: 0; color: var(--muted); text-align: center; font-size: 0.95rem; }
+
+/* Footer in light theme */
+body[data-theme="light"] .app-footer { background: #ffffff; }
+
+/* ---------- Header layout enhancements ---------- */
+.app-header .container { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.header-info { display: grid; }
+.header-actions { display: flex; align-items: center; gap: 8px; }
+.header-toggle { font-size: 0.95rem; }
+
+/* ---------- Light theme overrides ---------- */
+body[data-theme="light"] {
+  --bg: #f8fafc;         /* nền sáng */
+  --card: #ffffff;       /* nền thẻ sáng */
+  --text: #111827;       /* chữ tối */
+  --muted: #4b5563;      /* chữ phụ */
+  --border: #e5e7eb;     /* viền sáng */
+}
+body[data-theme="light"] .app-header {
+  background: linear-gradient(90deg, rgba(79,70,229,0.08), rgba(16,185,129,0.08));
+}
+body[data-theme="light"] input[type="url"] {
+  background: #ffffff;
+  color: var(--text);
+  border-color: var(--border);
+}
+body[data-theme="light"] .video-container { background: #ffffff; box-shadow: 0 8px 18px rgba(0,0,0,0.08); }
+body[data-theme="light"] .progress-bar { background: #ffffff; }
+
+/* Nền sáng thực sự cho body khi theme light */
+body[data-theme="light"] {
+  background: radial-gradient(1200px 600px at 20% -20%, #e2e8f0 0%, var(--bg) 40%, #eef2ff 100%);
+}
+
+/* Nút sáng hơn trong theme light */
+body[data-theme="light"] .btn {
+  background: #f9fafb;
+  color: var(--text);
+  border-color: var(--border);
+}
