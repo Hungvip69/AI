@@ -16,9 +16,10 @@ let currentLabel = 'Chưa có dữ liệu';
 let currentConfidence = null;
 
 // Tham chiếu DOM
-let elModelUrl, elLoadBtn, elStartBtn, elStopBtn, elThemeToggle;
-let elModelStatus, elLoader, elErrorArea;
-let elResultLabel, elResultConf, elEmoji;
+let elStartBtn, elStopBtn, elThemeToggle;
+let elModelStatus;
+let elResultLabel, elResultConf;
+let elConfBarFill;
 
 // Ghi chú: Các hàm p5 (setup/draw) cần ở scope toàn cục.
 function setup() {
@@ -51,57 +52,39 @@ function draw() {
 // Khởi tạo sau khi DOM sẵn sàng
 document.addEventListener('DOMContentLoaded', () => {
   // Lấy tham chiếu phần tử
-  elModelUrl = document.getElementById('model-url');
-  elLoadBtn = document.getElementById('load-model');
   elStartBtn = document.getElementById('start-btn');
   elStopBtn = document.getElementById('stop-btn');
-  elThemeToggle = document.getElementById('theme-toggle');
   elModelStatus = document.getElementById('model-status');
-  elLoader = document.getElementById('loader');
-  elErrorArea = document.getElementById('error-area');
   elResultLabel = document.getElementById('result-label');
   elResultConf = document.getElementById('result-confidence');
-  elEmoji = document.getElementById('emoji');
+  elThemeToggle = document.getElementById('theme-toggle');
+  elConfBarFill = document.getElementById('confidence-bar-fill');
 
   // Sự kiện
-  elLoadBtn.addEventListener('click', onLoadModel);
   elStartBtn.addEventListener('click', onStart);
   elStopBtn.addEventListener('click', onStop);
-  elThemeToggle.addEventListener('click', toggleTheme);
+  if (elThemeToggle) elThemeToggle.addEventListener('click', toggleTheme);
 
   // Trạng thái ban đầu
   setModelStatus('Chưa tải mô hình');
   updateResults('Chưa có dữ liệu', null);
-  setEmoji('');
 
-  // Khởi tạo theme từ localStorage
+  // Áp dụng theme đã lưu
   applyTheme(getSavedTheme());
 
-  // Đặt model mặc định và tự tải
-  const defaultModel = 'https://teachablemachine.withgoogle.com/models/wWLK3CJ0v/';
-  if (!elModelUrl.value) elModelUrl.value = defaultModel;
-  // Tự động tải mô hình mặc định (có thể bỏ nếu muốn thủ công)
+  // Tự động tải mô hình cục bộ
   onLoadModel();
 
   // Năm bản quyền động
   const elYear = document.getElementById('year');
-  if (elYear) {
-    elYear.textContent = new Date().getFullYear();
-  }
+  if (elYear) elYear.textContent = new Date().getFullYear();
 });
 
 // --------- UI helpers ---------
 function setModelStatus(text) {
   elModelStatus.textContent = text || '';
 }
-function showLoader(show) {
-  elLoader.classList.toggle('hidden', !show);
-  elLoader.setAttribute('aria-busy', show ? 'true' : 'false');
-}
-function showError(message) {
-  elErrorArea.textContent = message || '';
-  elErrorArea.classList.toggle('show', Boolean(message));
-}
+// Bỏ loader và hiển thị lỗi phức tạp
 function updateResults(label, confidence) {
   currentLabel = label;
   currentConfidence = confidence;
@@ -109,16 +92,17 @@ function updateResults(label, confidence) {
   if (typeof confidence === 'number') {
     const pct = Math.round(confidence * 100);
     elResultConf.textContent = `(${pct}%)`;
+    if (elConfBarFill) {
+      elConfBarFill.style.width = `${pct}%`;
+    }
   } else {
     elResultConf.textContent = '';
+    if (elConfBarFill) {
+      elConfBarFill.style.width = '0%';
+    }
   }
-  updateEmoji(label);
 }
-function setEmoji(char) {
-  const show = Boolean(char);
-  elEmoji.textContent = char || '';
-  elEmoji.classList.toggle('hidden', !show);
-}
+// Bỏ emoji
 
 // --------- Theme toggle ---------
 function getSavedTheme() {
@@ -139,45 +123,23 @@ function toggleTheme() {
 
 // --------- Nút Tải mô hình ---------
 async function onLoadModel() {
-  showError('');
-  const url = (elModelUrl.value || '').trim();
-  if (!url) {
-    showError('Vui lòng nhập URL mô hình Teachable Machine.');
-    return;
-  }
+  setModelStatus('Đang tải mô hình...');
   try {
-    elLoadBtn.disabled = true;
-    setModelStatus('Đang tải mô hình...');
-    showLoader(true);
-
-    const modelJson = normalizeModelUrl(url);
-    // ml5.imageClassifier hỗ trợ Promise, dùng await cho mã sạch
-    classifier = await ml5.imageClassifier(modelJson);
-
+    classifier = await ml5.imageClassifier('./model/model.json');
     setModelStatus('Mô hình đã sẵn sàng ✔');
-    elStartBtn.disabled = false; // Cho phép bắt đầu sau khi tải mô hình thành công
+    elStartBtn.disabled = false;
   } catch (err) {
     console.error(err);
-    showError('Không thể tải mô hình. Vui lòng kiểm tra URL và thử lại.');
-    setModelStatus('Lỗi khi tải mô hình');
-  } finally {
-    showLoader(false);
-    elLoadBtn.disabled = false;
+    setModelStatus('Không thể tải mô hình cục bộ');
   }
 }
 
-function normalizeModelUrl(url) {
-  // Teachable Machine thường có dạng .../models/XXXXXX/
-  // Cần nối thêm 'model.json' ở cuối.
-  const withSlash = url.endsWith('/') ? url : url + '/';
-  return withSlash + 'model.json';
-}
+
 
 // --------- Nút Bắt đầu ---------
 async function onStart() {
-  showError('');
   if (!classifier) {
-    showError('Bạn cần tải mô hình trước khi bắt đầu.');
+    setModelStatus('Bạn cần tải mô hình trước khi bắt đầu.');
     return;
   }
   try {
@@ -188,7 +150,7 @@ async function onStart() {
     try {
       await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
     } catch (camErr) {
-      showError('Không thể truy cập webcam. Hãy kiểm tra quyền truy cập camera trong trình duyệt.');
+      setModelStatus('Không thể truy cập webcam. Hãy kiểm tra quyền truy cập camera trong trình duyệt.');
       elStartBtn.disabled = false;
       elStopBtn.disabled = true;
       return;
@@ -204,7 +166,7 @@ async function onStart() {
     runClassificationLoop();
   } catch (err) {
     console.error(err);
-    showError('Đã xảy ra lỗi khi khởi động nhận diện.');
+    setModelStatus('Đã xảy ra lỗi khi khởi động nhận diện.');
     elStartBtn.disabled = false;
     elStopBtn.disabled = true;
   }
@@ -246,7 +208,7 @@ async function runClassificationLoop() {
       }
     } catch (err) {
       console.error('Lỗi phân loại:', err);
-      showError('Lỗi khi phân loại hình ảnh.');
+      setModelStatus('Lỗi khi phân loại hình ảnh.');
       // Nếu lỗi nhiều lần, có thể dừng vòng lặp để tránh treo
       // isRunning = false; (tuỳ yêu cầu)
     }
@@ -256,32 +218,7 @@ async function runClassificationLoop() {
 }
 
 // --------- Emoji theo nhãn ---------
-function updateEmoji(label) {
-  // Ánh xạ cứng cho các nhãn phổ biến. 
-  // Để linh hoạt với mô hình khác, có thể:
-  // - Đổi sang cấu hình JSON từ server; hoặc
-  // - Duyệt toàn bộ labels của mô hình và gán emoji theo từ khoá.
-  const m = {
-    // Tiếng Việt
-    'vui': '😃',
-    'buồn': '😢',
-    'ngạc nhiên': '😮',
-    'bình thường': '😐',
-    'tức giận': '😠',
-    'sợ hãi': '😨',
-    'ghê tởm': '🤢',
-    // Tiếng Anh
-    'happy': '😃',
-    'sad': '😢',
-    'surprised': '😮',
-    'neutral': '😐',
-    'angry': '😠',
-    'fear': '😨',
-    'disgust': '🤢'
-  };
-  const key = (label || '').toLowerCase();
-  setEmoji(m[key] || '');
-}
+// Bỏ ánh xạ emoji
 
 // --------- Utils ---------
 function sleep(ms) { return new Promise(res => setTimeout(res, ms)); }
