@@ -1,20 +1,13 @@
-/*
-  style.css
-  - Giao diện hiện đại, responsive
-  - Thanh tiến trình tải mô hình
-  - Căn giữa video và hiển thị kết quả nổi bật
-*/
-
 :root {
-  --bg: #0f172a;            /* nền xanh đậm */
-  --card: #111827;          /* nền thẻ */
-  --text: #e5e7eb;          /* chữ sáng */
-  --muted: #9ca3af;         /* chữ phụ */
-  --primary: #4f46e5;       /* tím chủ đạo */
+  --bg: #0f172a;
+  --card: #111827;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --primary: #4f46e5;
   --primary-600: #4338ca;
-  --success: #10b981;       /* xanh lá */
-  --danger: #ef4444;        /* đỏ */
-  --border: #1f2937;        /* viền */
+  --success: #10b981;
+  --danger: #ef4444;
+  --border: #1f2937;
 }
 
 * { box-sizing: border-box; }
@@ -28,7 +21,7 @@ body {
   grid-template-rows: auto 1fr auto;
 }
 
-/* Light theme overrides */
+
 body[data-theme="light"] {
   --bg: #f8fafc;
   --card: #ffffff;
@@ -48,7 +41,6 @@ body[data-theme="light"] {
   padding: 16px;
 }
 
-/* Header */
 .app-header {
   position: sticky;
   top: 0;
@@ -66,7 +58,6 @@ body[data-theme="light"] {
 .header-info p { margin: 4px 0 0; color: var(--muted); font-size: 0.95rem; }
 .header-actions .header-toggle { margin-left: 8px; }
 
-/* Header – light theme */
 body[data-theme="light"] .app-header {
   background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.6) 100%);
 }
@@ -116,12 +107,10 @@ input[type="url"] {
 .btn-primary { background: var(--primary); border-color: var(--primary-600); }
 .btn-success { background: var(--success); border-color: #0ea371; }
 .btn-outline { background: transparent; }
-/* Buttons – light theme base */
+
 body[data-theme="light"] .btn { background: #ffffff; }
 
 .status-area { color: var(--muted); min-height: 20px; }
-
-/* Bỏ loader và thanh tiến trình */
 
 .video-panel {
   display: grid;
@@ -129,15 +118,14 @@ body[data-theme="light"] .btn { background: #ffffff; }
 }
 .video-container {
   position: relative;
-  width: 480px; /* Tăng từ 340px lên 480px */
-  height: 360px; /* Tăng từ 260px lên 360px */
+  width: 480px;
+  height: 360px;
   border: 1px solid var(--border);
   border-radius: 16px;
   background: #0b1220;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
   overflow: hidden;
 }
-/* Video panel – light theme */
 body[data-theme="light"] .video-container {
   background: #ffffff;
   box-shadow: 0 6px 14px rgba(0,0,0,0.12);
@@ -157,9 +145,6 @@ canvas { transform: scaleX(-1); }
 }
 .label { font-size: 1.4rem; font-weight: 700; }
 .confidence { font-size: 1rem; color: var(--muted); }
-/* Bỏ emoji */
-
-/* Confidence bar */
 .confidence-bar {
   position: relative;
   height: 10px;
@@ -174,10 +159,6 @@ canvas { transform: scaleX(-1); }
   background: linear-gradient(90deg, var(--success), #34d399);
   transition: width 200ms ease;
 }
-
-/* Bỏ khu vực lỗi chi tiết */
-
-/* Responsive */
 @media (min-width: 768px) {
   .video-container {
     width: 640px;
@@ -192,15 +173,9 @@ canvas { transform: scaleX(-1); }
     aspect-ratio: 4/3;
   }
 }
-/* Bỏ các khối trùng lặp và emoji, error */
-
-/* Responsive */
 @media (max-width: 600px) {
   .video-container { width: 100%; height: auto; aspect-ratio: 4/3; }
 }
-
-/* Bỏ footer */
-/* Footer styles */
 .footer {
   margin-top: 16px;
   border-top: 1px solid var(--border);
@@ -215,17 +190,9 @@ canvas { transform: scaleX(-1); }
   display: flex;
   justify-content: center;
 }
-
-/* Grid layout on wide screens */
 @media (min-width: 1024px) {
   main.container {
     grid-template-columns: 1fr 1fr;
   }
   .controls { grid-column: 1 / -1; }
 }
-
-/* ---------- Header layout enhancements ---------- */
-/* Bỏ bố cục header */
-
-/* ---------- Light theme overrides ---------- */
-/* Bỏ chế độ sáng để giảm độ phức tạp */
