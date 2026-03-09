@@ -1,23 +1,67 @@
-const MODEL_BASE_PATH = "./assets/model/";
+﻿const MODEL_BASE_PATH = "./assets/model/";
 const LOW_CONFIDENCE_THRESHOLD = 0.6;
 const TOP_K = 3;
+const THEME_STORAGE_KEY = "leader-portrait-theme";
 
 const ACCEPTED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp"];
 
-const LABEL_INSIGHTS = {
-  "Nguyễn Tất Thành":
-    "Phong cách thiên về tầm nhìn dài hạn, kiên định mục tiêu độc lập dân tộc và chú trọng tổ chức lực lượng quần chúng.",
-  "Phan Châu Trinh":
-    "Phong cách nhấn mạnh cải cách xã hội, nâng cao dân trí, đề cao con đường canh tân để đổi mới đất nước.",
-  "Phan Bội Châu":
-    "Phong cách thiên về tinh thần hành động quyết liệt, truyền cảm hứng yêu nước và vận động lực lượng trong lẫn ngoài nước.",
-  "Hoàng Hoa Thám":
-    "Phong cách gắn với kháng chiến bền bỉ, linh hoạt chiến thuật và duy trì tinh thần tự chủ trong đấu tranh lâu dài.",
-  "Vua Hàm Nghi":
-    "Phong cách thể hiện biểu tượng chính danh và tinh thần hiệu triệu, khơi dậy ý chí kháng chiến qua vai trò quy tụ lực lượng.",
-  "Phan Đình Phùng":
-    "Phong cách nổi bật ở ý chí kiên cường, giữ vững chính nghĩa và tổ chức kháng chiến bền bỉ trước sức ép kéo dài.",
+const PERIOD_CATEGORIES = {
+  CAN_VUONG_YEN_THE: "Phong trào Cần Vương & Khởi nghĩa Yên Thế (Cuối thế kỉ XIX)",
+  YEU_NUOC_DAU_THE_KY_XX: "Phong trào Yêu nước đầu thế kỉ XX",
+};
+
+const LABEL_PROFILES = {
+  "Nguyễn Tất Thành": {
+    leadershipStyle:
+      "Phong cách thiên về tầm nhìn dài hạn, kiên định mục tiêu độc lập dân tộc và chú trọng tổ chức lực lượng quần chúng.",
+    movementRole:
+      "Người thanh niên yêu nước tiêu biểu, ra đi tìm đường cứu nước tại bến cảng Nhà Rồng năm 1911.",
+    birthYear: "1890",
+    deathYear: "1969",
+    period: PERIOD_CATEGORIES.YEU_NUOC_DAU_THE_KY_XX,
+  },
+  "Phan Châu Trinh": {
+    leadershipStyle:
+      "Phong cách nhấn mạnh cải cách xã hội, nâng cao dân trí, đề cao con đường canh tân để đổi mới đất nước.",
+    movementRole: "Lãnh đạo cuộc vận động Duy Tân ở Trung Kì.",
+    birthYear: "1872",
+    deathYear: "1926",
+    period: PERIOD_CATEGORIES.YEU_NUOC_DAU_THE_KY_XX,
+  },
+  "Phan Bội Châu": {
+    leadershipStyle:
+      "Phong cách thiên về tinh thần hành động quyết liệt, truyền cảm hứng yêu nước và vận động lực lượng trong lẫn ngoài nước.",
+    movementRole: "Lãnh đạo phong trào Đông Du (đưa thanh niên sang Nhật học tập).",
+    birthYear: "1867",
+    deathYear: "1940",
+    period: PERIOD_CATEGORIES.YEU_NUOC_DAU_THE_KY_XX,
+  },
+  "Hoàng Hoa Thám": {
+    leadershipStyle:
+      "Phong cách gắn với kháng chiến bền bỉ, linh hoạt chiến thuật và duy trì tinh thần tự chủ trong đấu tranh lâu dài.",
+    movementRole: "Thủ lĩnh kiệt xuất của phong trào nông dân Yên Thế.",
+    birthYear: "1858",
+    deathYear: "1913",
+    period: PERIOD_CATEGORIES.CAN_VUONG_YEN_THE,
+  },
+  "Vua Hàm Nghi": {
+    leadershipStyle:
+      "Phong cách thể hiện biểu tượng chính danh và tinh thần hiệu triệu, khơi dậy ý chí kháng chiến qua vai trò quy tụ lực lượng.",
+    movementRole: "Người hạ chiếu Cần Vương, lãnh đạo cao trào Cần Vương trên toàn quốc.",
+    birthYear: "1871",
+    deathYear: "1944",
+    period: PERIOD_CATEGORIES.CAN_VUONG_YEN_THE,
+  },
+  "Phan Đình Phùng": {
+    leadershipStyle:
+      "Phong cách nổi bật ở ý chí kiên cường, giữ vững chính nghĩa và tổ chức kháng chiến bền bỉ trước sức ép kéo dài.",
+    movementRole:
+      "Lãnh đạo khởi nghĩa Hương Khê, cuộc khởi nghĩa tiêu biểu nhất của phong trào Cần Vương.",
+    birthYear: "1847",
+    deathYear: "1895",
+    period: PERIOD_CATEGORIES.CAN_VUONG_YEN_THE,
+  },
 };
 
 const state = {
@@ -29,6 +73,9 @@ const state = {
 
 const elements = {
   fileInput: document.getElementById("fileInput"),
+  themeToggle: document.getElementById("themeToggle"),
+  themeToggleIcon: document.getElementById("themeToggleIcon"),
+  themeToggleLabel: document.getElementById("themeToggleLabel"),
   fileHint: document.getElementById("fileHint"),
   modelState: document.getElementById("modelState"),
   previewImage: document.getElementById("previewImage"),
@@ -40,9 +87,66 @@ const elements = {
 };
 
 window.addEventListener("DOMContentLoaded", () => {
+  initTheme();
+  elements.themeToggle?.addEventListener("click", onThemeToggleClick);
   elements.fileInput.addEventListener("change", onFileInputChange);
   void initModel();
 });
+
+function initTheme() {
+  let savedTheme = null;
+  try {
+    savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+  } catch (error) {
+    console.warn("Cannot read theme from localStorage", error);
+  }
+
+  const prefersDark =
+    window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const theme =
+    savedTheme === "dark" || savedTheme === "light"
+      ? savedTheme
+      : prefersDark
+      ? "dark"
+      : "light";
+  applyTheme(theme);
+}
+
+function onThemeToggleClick() {
+  const currentTheme = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+  const nextTheme = currentTheme === "dark" ? "light" : "dark";
+  applyTheme(nextTheme);
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+  } catch (error) {
+    console.warn("Cannot save theme to localStorage", error);
+  }
+}
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  updateThemeToggle(theme);
+}
+
+function updateThemeToggle(theme) {
+  if (!elements.themeToggle) {
+    return;
+  }
+  const isDark = theme === "dark";
+  const icon = isDark ? "☀" : "☾";
+  const label = isDark ? "Chế độ sáng" : "Chế độ tối";
+  if (elements.themeToggleIcon) {
+    elements.themeToggleIcon.textContent = icon;
+  }
+  if (elements.themeToggleLabel) {
+    elements.themeToggleLabel.textContent = label;
+  }
+  elements.themeToggle.setAttribute("aria-pressed", String(isDark));
+  elements.themeToggle.setAttribute(
+    "aria-label",
+    isDark ? "Bật chế độ sáng" : "Bật chế độ tối"
+  );
+}
 
 async function initModel() {
   if (!window.tmImage) {
@@ -210,10 +314,21 @@ function renderPredictions(predictions) {
 }
 
 function getLabelInsight(label) {
-  if (LABEL_INSIGHTS[label]) {
-    return LABEL_INSIGHTS[label];
+  const profile = LABEL_PROFILES[label];
+  if (!profile) {
+    return [
+      `Mô hình đang nhận diện vào nhãn "${label}".`,
+      "Bạn có thể bổ sung hồ sơ nhân vật riêng trong LABEL_PROFILES.",
+    ].join("\n");
   }
-  return `Mô hình đang nhận diện vào nhãn "${label}". Bạn có thể bổ sung mô tả riêng cho nhãn này trong LABEL_INSIGHTS.`;
+
+  return [
+    profile.leadershipStyle,
+    `Vai trò phong trào: ${profile.movementRole}`,
+    `Năm sinh: ${profile.birthYear}`,
+    `Năm mất: ${profile.deathYear}`,
+    `Thời kỳ: ${profile.period}`,
+  ].join("\n");
 }
 
 function setPredictionPlaceholder(message) {

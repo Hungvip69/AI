@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="vi">
 <head>
   <meta charset="utf-8">
@@ -12,7 +12,13 @@
 <body>
   <main class="app">
     <header class="hero">
-      <p class="eyebrow">Teachable Machine Demo</p>
+      <div class="hero-top">
+        <p class="eyebrow">Teachable Machine Demo</p>
+        <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="Bật chế độ tối">
+          <span id="themeToggleIcon" class="theme-toggle__icon" aria-hidden="true">☾</span>
+          <span id="themeToggleLabel" class="theme-toggle__label">Chế độ tối</span>
+        </button>
+      </div>
       <h1>Nhận diện chân dung lãnh đạo Việt Nam trong lịch sử</h1>
       <p class="lead">
         Tải ảnh lên để mô hình dự đoán nhân vật, hiển thị Top 3 xác suất và gợi ý ngắn về phong cách lãnh đạo.
@@ -43,6 +49,10 @@
           <span id="confidenceBadge" class="badge badge--idle">Chờ ảnh</span>
         </div>
 
+        <p class="result-disclaimer">
+          Lưu ý: Kết quả nhận diện chỉ mang tính tham khảo, có thể không chính xác tuyệt đối do chất lượng ảnh và dữ liệu huấn luyện.
+        </p>
+
         <ul id="predictionList" class="prediction-list">
           <li class="prediction-empty">Kết quả Top 3 sẽ hiển thị tại đây.</li>
         </ul>
@@ -55,6 +65,8 @@
         </article>
       </section>
     </div>
+
+    <p class="page-credit">Credit: Quách Tấn Hưng, Lớp 8/3, Thcs Nguyễn Du</p>
   </main>
 </body>
 </html>

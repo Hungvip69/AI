@@ -4,6 +4,8 @@
   --bg-1: #f8f3e7;
   --bg-2: #e6f2ed;
   --bg-3: #fefaf1;
+  --bg-radial-1: #e9dfc4;
+  --bg-radial-2: #d7ebe3;
   --ink: #1f2a2c;
   --muted: #546067;
   --panel: rgba(255, 255, 255, 0.8);
@@ -12,6 +14,39 @@
   --accent-2: #ca8a04;
   --danger: #b91c1c;
   --shadow: 0 20px 50px rgba(31, 42, 44, 0.12);
+  --prediction-value: #1e293b;
+  --bar-track-bg: rgba(15, 118, 110, 0.16);
+  --insight-copy: #334155;
+  --credit: #334155;
+  --preview-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2));
+  --prediction-item-bg: rgba(255, 255, 255, 0.62);
+  --insight-bg: linear-gradient(130deg, rgba(20, 184, 166, 0.13), rgba(202, 138, 4, 0.12));
+  --disclaimer-bg: rgba(202, 138, 4, 0.12);
+  --disclaimer-border: rgba(146, 64, 14, 0.3);
+  --disclaimer-text: #5b3d12;
+}
+
+[data-theme="dark"] {
+  --bg-1: #0f172a;
+  --bg-2: #0c1f24;
+  --bg-3: #111827;
+  --bg-radial-1: rgba(15, 118, 110, 0.34);
+  --bg-radial-2: rgba(202, 138, 4, 0.2);
+  --ink: #e2e8f0;
+  --muted: #9ca8b8;
+  --panel: rgba(15, 23, 42, 0.72);
+  --panel-border: rgba(148, 163, 184, 0.2);
+  --shadow: 0 18px 48px rgba(2, 6, 23, 0.55);
+  --prediction-value: #e2e8f0;
+  --bar-track-bg: rgba(45, 212, 191, 0.22);
+  --insight-copy: #cbd5e1;
+  --credit: #cbd5e1;
+  --preview-bg: linear-gradient(145deg, rgba(30, 41, 59, 0.65), rgba(15, 23, 42, 0.55));
+  --prediction-item-bg: rgba(30, 41, 59, 0.7);
+  --insight-bg: linear-gradient(130deg, rgba(20, 184, 166, 0.2), rgba(202, 138, 4, 0.18));
+  --disclaimer-bg: rgba(245, 158, 11, 0.18);
+  --disclaimer-border: rgba(251, 191, 36, 0.38);
+  --disclaimer-text: #fef3c7;
 }
 
 *,
@@ -26,20 +61,33 @@ body {
   color: var(--ink);
   font-family: "Be Vietnam Pro", "Tahoma", sans-serif;
   background:
-    radial-gradient(circle at 12% 12%, #e9dfc4 0%, transparent 32%),
-    radial-gradient(circle at 90% 82%, #d7ebe3 0%, transparent 30%),
+    radial-gradient(circle at 12% 12%, var(--bg-radial-1) 0%, transparent 32%),
+    radial-gradient(circle at 90% 82%, var(--bg-radial-2) 0%, transparent 30%),
     linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 46%, var(--bg-3) 100%);
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .app {
+  position: relative;
+  z-index: 1;
   width: min(1080px, 94vw);
   margin: 0 auto;
-  padding: 2.2rem 0 2.5rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 2.2rem 0 1rem;
   animation: rise-in 0.75s ease-out both;
 }
 
 .hero {
   margin-bottom: 1.2rem;
+}
+
+.hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
 }
 
 .eyebrow {
@@ -55,6 +103,39 @@ h1,
 h2,
 h3 {
   margin: 0;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  cursor: pointer;
+  border: 1px solid var(--panel-border);
+  background: var(--panel);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.42rem 0.78rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+  transition: transform 0.2s ease, background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-1px);
+}
+
+.theme-toggle:active {
+  transform: translateY(0);
+}
+
+.theme-toggle__icon {
+  font-size: 0.98rem;
+  line-height: 1;
+}
+
+.theme-toggle__label {
+  line-height: 1;
 }
 
 h1 {
@@ -84,6 +165,7 @@ h1 {
   border: 1px solid var(--panel-border);
   box-shadow: var(--shadow);
   backdrop-filter: blur(8px);
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .upload-panel,
@@ -178,7 +260,8 @@ h1 {
   min-height: 290px;
   display: grid;
   place-items: center;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2));
+  background: var(--preview-bg);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 #previewImage {
@@ -210,6 +293,17 @@ h1 {
   justify-content: space-between;
   align-items: center;
   gap: 0.8rem;
+}
+
+.result-disclaimer {
+  margin: 0.72rem 0 0;
+  padding: 0.58rem 0.68rem;
+  border-radius: 10px;
+  border: 1px solid var(--disclaimer-border);
+  background: var(--disclaimer-bg);
+  color: var(--disclaimer-text);
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
 .badge {
@@ -261,9 +355,10 @@ h1 {
 .prediction-item {
   border-radius: 12px;
   padding: 0.7rem 0.74rem;
-  background: rgba(255, 255, 255, 0.62);
+  background: var(--prediction-item-bg);
   border: 1px solid rgba(31, 42, 44, 0.09);
   animation: rise-in 0.4s ease-out both;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .prediction-row {
@@ -275,7 +370,7 @@ h1 {
 
 .prediction-value {
   font-weight: 700;
-  color: #1e293b;
+  color: var(--prediction-value);
 }
 
 .bar-track {
@@ -283,7 +378,7 @@ h1 {
   width: 100%;
   height: 8px;
   border-radius: 999px;
-  background: rgba(15, 118, 110, 0.16);
+  background: var(--bar-track-bg);
   overflow: hidden;
 }
 
@@ -298,9 +393,10 @@ h1 {
 .insight-card {
   margin-top: 0.95rem;
   border-radius: 14px;
-  background: linear-gradient(130deg, rgba(20, 184, 166, 0.13), rgba(202, 138, 4, 0.12));
+  background: var(--insight-bg);
   border: 1px solid rgba(31, 42, 44, 0.1);
   padding: 0.85rem 0.86rem;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .insight-card h3 {
@@ -310,8 +406,38 @@ h1 {
 
 .insight-card p {
   margin: 0.45rem 0 0;
-  color: #334155;
+  color: var(--insight-copy);
   line-height: 1.45;
+  white-space: pre-line;
+}
+
+.page-credit {
+  margin: auto 0 0;
+  padding-top: 1rem;
+  text-align: center;
+  color: var(--credit);
+  font-size: 0.92rem;
+  font-weight: 600;
+  transition: color 0.25s ease;
+}
+
+[data-theme="dark"] .preview-wrap {
+  border-color: rgba(148, 163, 184, 0.35);
+}
+
+[data-theme="dark"] .prediction-item {
+  border-color: rgba(148, 163, 184, 0.28);
+}
+
+[data-theme="dark"] .prediction-empty {
+  border-color: rgba(148, 163, 184, 0.35);
+}
+
+@media (max-width: 520px) {
+  .hero-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
 @keyframes rise-in {
